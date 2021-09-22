@@ -1,6 +1,7 @@
 import socket
 import os
 import mimetypes
+from template import *
 
 def tcp_server():
     SERVER_HOST = '127.0.0.1'
@@ -15,7 +16,6 @@ def tcp_server():
         #request
         request = client_connection.recv(1024).decode()
         #handle request
-        print(request)
         response = handle_request(request)
         #response
         client_connection.sendall(response)
@@ -34,7 +34,8 @@ def handle_request(request):
     if(method == 'GET'):
         response = handle_get(uri, http_version)
     elif(method == 'POST'):
-        response = handle_post(uri, http_version)
+        data = request_message[len(request_message)-1]
+        response = handle_post(uri, http_version,data)
     return response
 
 def handle_get(uri, http_version):
@@ -54,15 +55,25 @@ def handle_get(uri, http_version):
     response = b''.join([response_line, crlf, entity_header, crlf, crlf, message_body])
     return response
 
-def handle_post(uri, http_version):
+def handle_post(uri, http_version, data):
     uri = "htdocs/%s"%(uri)
     if os.path.exists(uri) and not os.path.isdir(uri):
         response_line = b''.join([http_version.encode(), b'200', b'OK'])
         content_type = mimetypes.guess_type(uri)[0] or 'text/html'
         entity_header = b''.join([b'Content-type: ', content_type.encode()])
-        file = open(uri, 'rb')
-        message_body = file.read()
+        file = open(uri, 'r')
+        html = file.read()
         file.close()
+        template = Template(html)
+        _POST = {}
+        for x in data.split('&'):
+            y = x.split('=')
+            _POST[y[0]]=y[1]
+        print(_POST)
+        context = {
+            '_POST' : _POST
+        }
+        message_body = template.render(context).encode()
     else :
         response_line = b''.join([http_version.encode(), b'404', b'Not Found'])
         entity_header = b'Content-Type: text/html'
@@ -70,7 +81,6 @@ def handle_post(uri, http_version):
     crlf = b'\r\n'
     response = b''.join([response_line, crlf, entity_header, crlf, crlf, message_body])
     return response
-
 
 if __name__ == "__main__":
     tcp_server()

@@ -21,11 +21,15 @@ class Template():
                 # code block
                 # find out the indentation
                 lines = token.replace('{\%', '{%').replace('%\}', '%}').splitlines()
-                indent = min([len(l) - len(l.lstrip()) for l in lines if l.strip()])
+                indent = 0
+                for l in lines:
+                    if l.strip():
+                        indent = min([len(l)- len(l.strip())])
+                # print(indent)
+                # indent = min([len(l) - len(l.lstrip()) for l in lines if l.strip()])
                 realigned = '\n'.join(l[indent:] for l in lines)
                 tokens.append((True, compile(realigned, '<tempalte> %s' % realigned[:20], 'exec')))
         return tokens
-
 
     def render(self, context = None, **kw):
         """Render the template according to the given context"""
@@ -43,6 +47,7 @@ class Template():
 
         global_context['emit'] = emit
         global_context['fmt_emit'] = fmt_emit
+        
 
         # run the code
         result = []
@@ -53,18 +58,3 @@ class Template():
                 result.append(token)
         return ''.join(result)
 
-    # make instance callable
-    #__call__ = render
-file = open("tes.html", 'r')
-html = file.read()
-print(html)
-file.close()
-template = Template(html)
-context = {
-    '_POST' : {
-        'username': 'aku',
-        'password': 'kamu'
-    }
-}
-hasil = template.render(context)
-print (hasil)
