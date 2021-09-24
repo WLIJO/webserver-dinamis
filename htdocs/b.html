@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script lang="js">
+    function createRequestObject() {
+        var ro;
+        var browser = navigator.appName;
+        if(browser == "Microsoft Internet Explorer"){
+            ro = new ActiveXObject("Microsoft.XMLHTTP");
+        }else{
+            ro = new XMLHttpRequest();
+        }
+        return ro;
+    }
+
+    var http = createRequestObject();
+
+    function sndReq(qry) {
+        http.open('get', 'backend.rpc?action='+qry);
+        http.onreadystatechange = handleResponse;
+        http.send(null);
+    }
+
+    function handleResponse(){
+        if(http.readyState == 4){
+            var response = http.responseText;
+            var data = JSON.parse(response);
+            var tabel = '<table border="1px">';
+            for(i in data ){
+                tabel += '<tr><td>' + data[i]['nim'] +'</td><td>'+data[i]['nama'] +'</td></tr>';
+            }
+            tabel += '</table>';
+            alert(data[0]['nama']);
+            console.log(data);
+            document.getElementById("h").innerHTML = tabel;
+        }
+    }
+</script>
+<body>
+    <button onclick="javascript:sndReq('h');">
+        click me!
+    </button>
+    <button onclick="javascript:sndReq('ha');">
+        Clik again!
+    </button>
+    <button onclick="javascript:sndReq('hb');">
+        click more!
+    </button>
+    <div id='h'>
+    </div>
+</body>
+</html>

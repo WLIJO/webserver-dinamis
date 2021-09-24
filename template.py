@@ -12,7 +12,9 @@ class Template():
 
     def compile(self, text):
         tokens = []
+        print(self.delimiter.split(text))
         for index, token in enumerate(self.delimiter.split(text)):
+
             if index % 2 == 0:
                 # plain string
                 if token:
@@ -21,12 +23,7 @@ class Template():
                 # code block
                 # find out the indentation
                 lines = token.replace('{\%', '{%').replace('%\}', '%}').splitlines()
-                indent = 0
-                for l in lines:
-                    if l.strip():
-                        indent = min([len(l)- len(l.strip())])
-                # print(indent)
-                # indent = min([len(l) - len(l.lstrip()) for l in lines if l.strip()])
+                indent = min([len(l) - len(l.lstrip()) for l in lines if l.strip()])
                 realigned = '\n'.join(l[indent:] for l in lines)
                 tokens.append((True, compile(realigned, '<tempalte> %s' % realigned[:20], 'exec')))
         return tokens

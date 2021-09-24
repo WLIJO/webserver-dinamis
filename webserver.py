@@ -28,25 +28,47 @@ def handle_request(request):
     words = request_line.split()
     method = words[0]
     uri = words[1].strip("/")
+    query = uri.split('?')
+    query_string = ''
     http_version = words[2]
     if(uri == ''):
         uri = 'index.html'
+    url = uri
+    if(len(query) > 1):
+        query_string = query[1]
+        url = query[0]
     if(method == 'GET'):
-        response = handle_get(uri, http_version)
+        print(uri)
+        query_string = query_string
+        response = handle_get(url, http_version,query_string)
     elif(method == 'POST'):
         data = request_message[len(request_message)-1]
-        response = handle_post(uri, http_version,data)
+        response = handle_post(url, http_version,data,query_string)
     return response
 
-def handle_get(uri, http_version):
-    uri = "htdocs/%s"%(uri)
-    if os.path.exists(uri) and not os.path.isdir(uri):
+def handle_get(url, http_version,query_string = ''):
+    url = "htdocs/%s"%(url)
+    if os.path.exists(url) and not os.path.isdir(url):
         response_line = b''.join([http_version.encode(), b'200', b'OK'])
-        content_type = mimetypes.guess_type(uri)[0] or 'text/html'
+        content_type = mimetypes.guess_type(url)[0] or 'text/html'
         entity_header = b''.join([b'Content-type: ', content_type.encode()])
-        file = open(uri, 'rb')
-        message_body = file.read()
-        file.close()
+        if(query_string == ''):
+            file = open(url, 'rb')
+            message_body = file.read()
+            file.close()
+        else:
+            file = open(url, 'r')
+            html = file.read()
+            file.close()
+            template = Template(html)
+            _QUERY_STRING = {}
+            for x in query_string.split('&'):
+                y = x.split('=')
+                _QUERY_STRING[y[0]]=y[1]
+            context = {
+                '_QUERY_STRING' : _QUERY_STRING
+            }
+            message_body = template.render(context).encode()
     else :
         response_line = b''.join([http_version.encode(), b'404', b'Not Found'])
         entity_header = b'Content-Type: text/html'
@@ -55,23 +77,28 @@ def handle_get(uri, http_version):
     response = b''.join([response_line, crlf, entity_header, crlf, crlf, message_body])
     return response
 
-def handle_post(uri, http_version, data):
-    uri = "htdocs/%s"%(uri)
-    if os.path.exists(uri) and not os.path.isdir(uri):
+def handle_post(url, http_version, data, query_string):
+    url = "htdocs/%s"%(url)
+    if os.path.exists(url) and not os.path.isdir(url):
         response_line = b''.join([http_version.encode(), b'200', b'OK'])
-        content_type = mimetypes.guess_type(uri)[0] or 'text/html'
+        content_type = mimetypes.guess_type(url)[0] or 'text/html'
         entity_header = b''.join([b'Content-type: ', content_type.encode()])
-        file = open(uri, 'r')
+        file = open(url, 'r')
         html = file.read()
         file.close()
         template = Template(html)
         _POST = {}
+        _QUERY_STRING = {}
+        for x in query_string.split('&'):
+                y = x.split('=')
+                _QUERY_STRING[y[0]]=y[1]
         for x in data.split('&'):
             y = x.split('=')
             _POST[y[0]]=y[1]
         print(_POST)
         context = {
-            '_POST' : _POST
+            '_POST' : _POST,
+            '_QUERY_STRING' : _QUERY_STRING,
         }
         message_body = template.render(context).encode()
     else :

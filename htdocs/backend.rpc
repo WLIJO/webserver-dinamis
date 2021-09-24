@@ -1,0 +1,12 @@
+{% 
+    action = _QUERY_STRING['action']
+    if(action == 'h'):
+        emit('<h1>Hallo !</h1>')
+    elif(action == 'ha'):
+        emit('<p>Ini yang kedua</p>')
+    elif(action == 'hb'):
+        f = open('htdocs/b.json', 'r')
+        data = f.read()
+        f.close()
+        emit(data)
+%}
