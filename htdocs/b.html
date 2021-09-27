@@ -21,7 +21,7 @@
     var http = createRequestObject();
 
     function sndReq(qry) {
-        http.open('get', 'backend.rpc?action='+qry);
+        http.open('get', 'backend.rpc?route='+qry);
         http.onreadystatechange = handleResponse;
         http.send(null);
     }

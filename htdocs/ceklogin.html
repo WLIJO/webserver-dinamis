@@ -11,6 +11,7 @@
         l = _QUERY_STRING['login'] 
         u = _POST['username']
         p = _POST['password']
+        
         emit(l)
         if (u == 'aku') and (p == 'saya'):
             emit('Login successful')

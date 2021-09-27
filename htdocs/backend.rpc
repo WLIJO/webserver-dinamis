@@ -1,10 +1,14 @@
 {% 
-    action = _QUERY_STRING['action']
-    if(action == 'h'):
+    route = _QUERY_STRING['route']
+    if(route == 'h'):
         emit('<h1>Hallo !</h1>')
-    elif(action == 'ha'):
-        emit('<p>Ini yang kedua</p>')
-    elif(action == 'hb'):
+    elif(route == 'ha'):
+        f = open('htdocs/c.json','r')
+        data = f.read()
+        f.close()
+        emit(data)
+
+    elif(route == 'hb'):
         f = open('htdocs/b.json', 'r')
         data = f.read()
         f.close()

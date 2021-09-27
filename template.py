@@ -12,7 +12,6 @@ class Template():
 
     def compile(self, text):
         tokens = []
-        print(self.delimiter.split(text))
         for index, token in enumerate(self.delimiter.split(text)):
 
             if index % 2 == 0:

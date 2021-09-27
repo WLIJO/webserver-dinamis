@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <button id="hb">
+        click more!
+    </button> 
+    <button id="ha">
+        click more!
+    </button>
+    <br>
+    <div id='h'>
+        aku
+    </div>
+
+        <script>
+        function render(data){
+            var data = JSON.parse(data);
+                    var tabel = '<table border="1px">';
+                    for(i in data ){
+                        tabel += '<tr><td>' + data[i]['nim'] +'</td><td>'+data[i]['nama'] +'</td></tr>';
+                    }
+                    tabel += '</table>';
+                    document.getElementById("h").innerHTML = tabel;
+        }
+        
+        $(document).ready(function() {
+            $('#ha').click(function() {
+                $.get("backend.rpc?route="+this.id , function(data){
+                    render(data);
+                    
+                });
+            })
+            $('#hb').click(function() {
+                $.get("backend.rpc?route="+this.id , function(data){
+                    render(data);
+                    
+                });
+            })
+        })
+    </script>
+</body>
+</html>

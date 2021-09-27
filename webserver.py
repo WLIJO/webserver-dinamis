@@ -38,7 +38,6 @@ def handle_request(request):
         query_string = query[1]
         url = query[0]
     if(method == 'GET'):
-        print(uri)
         query_string = query_string
         response = handle_get(url, http_version,query_string)
     elif(method == 'POST'):
@@ -95,7 +94,6 @@ def handle_post(url, http_version, data, query_string):
         for x in data.split('&'):
             y = x.split('=')
             _POST[y[0]]=y[1]
-        print(_POST)
         context = {
             '_POST' : _POST,
             '_QUERY_STRING' : _QUERY_STRING,
