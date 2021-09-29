@@ -82,22 +82,32 @@ def handle_post(url, http_version, data, query_string):
         response_line = b''.join([http_version.encode(), b'200', b'OK'])
         content_type = mimetypes.guess_type(url)[0] or 'text/html'
         entity_header = b''.join([b'Content-type: ', content_type.encode()])
-        file = open(url, 'r')
-        html = file.read()
-        file.close()
-        template = Template(html)
-        _POST = {}
-        _QUERY_STRING = {}
-        for x in query_string.split('&'):
+        if(query_string == ''):
+            file = open(url, 'r')
+            html = file.read()
+            file.close()
+            template = Template(html)
+            _POST = {}
+            context = {
+                '_POST' : _POST
+            }
+        else :
+            file = open(url, 'r')
+            html = file.read()
+            file.close()
+            template = Template(html)
+            _POST = {}
+            _QUERY_STRING = {}
+            for x in query_string.split('&'):
+                    y = x.split('=')
+                    _QUERY_STRING[y[0]]=y[1]
+            for x in data.split('&'):
                 y = x.split('=')
-                _QUERY_STRING[y[0]]=y[1]
-        for x in data.split('&'):
-            y = x.split('=')
-            _POST[y[0]]=y[1]
-        context = {
-            '_POST' : _POST,
-            '_QUERY_STRING' : _QUERY_STRING,
-        }
+                _POST[y[0]]=y[1]
+            context = {
+                '_POST' : _POST,
+                '_QUERY_STRING' : _QUERY_STRING,
+            }
         message_body = template.render(context).encode()
     else :
         response_line = b''.join([http_version.encode(), b'404', b'Not Found'])

@@ -1,0 +1,55 @@
+<html>
+   
+<head>
+    <script 
+    src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+    </script>
+    <!-- jQuery code to show the working of this method -->
+    <script>
+        $(document).ready(function() {
+            $("button").click(function() {
+                var x = $("form").serializeArray();
+                var data = {
+                    username : $('#username').val(),
+                    password : $('#password').val()
+                };
+                
+                $.post('ceklogin2.html?user=aku', data ,function(data) {
+                    console.log(data);
+                })
+
+                .fail(function(data) {
+                    console.log('error');
+                });
+            });
+        });
+    </script>
+    <style>
+        #d1 {
+            width: 300px;
+            height: 100px;
+            padding: 20px;
+            border: 2px solid green;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+   
+<body>
+    <div id="d1">
+        <form action="ceklogin2.html">
+            Site name:
+            <input type="text" name="username" id="username">
+            <br>
+            <br> Contributor name:
+            <input type="password" name="password" id="password">
+            <br>
+        </form>
+        <!-- click on this button -->
+        <button>Click here!</button>
+    </div>
+    <div id="d"></div>
+   
+</body>
+   
+</html>
